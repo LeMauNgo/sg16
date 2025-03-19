@@ -23,12 +23,18 @@ public class TetrominoMover : SaiBehaviour
 
     void Update()
     {
+
         if (transform.parent == null || hasLanded) return;
 
         this.CheckBlockLeftRight();
         HandleMovement();
         HandleRotation();
         HandleAutoDrop();
+        if (Input.GetKey(KeyCode.RightArrow) && moveTimer >= moveDelay)
+        {
+            Debug.Log("Right Arrow");
+
+        }
     }
 
     protected override void LoadComponents()
@@ -56,9 +62,9 @@ public class TetrominoMover : SaiBehaviour
     protected virtual void MoveLeft()
     {
         Transform parent = transform.parent;
-
         if (Input.GetKey(KeyCode.RightArrow) && moveTimer >= moveDelay)
         {
+            Debug.Log("Right Arrow");
             if (parent.position.x + moveSpeed <= maxX && !this.IsBlockedRight())
             {
                 parent.position += Vector3.right * moveSpeed;
