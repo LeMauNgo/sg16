@@ -1,187 +1,96 @@
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class TetrominoMover : SaiBehaviour
+public class TetrominoMover : TertrominoesAbs
 {
-    [SerializeField] protected TetrominoCtrl ctrl;
-    [SerializeField] protected float moveSpeed = 1f;
-    [SerializeField] protected float dropSpeed = 1f;
-    [SerializeField] protected float autoDropInterval = 1f;
-    [SerializeField] protected float minX = -7f;
-    [SerializeField] protected float maxX = 7f;
-    [SerializeField] protected float minY = -14f;
-
-    [SerializeField] protected float moveDelay = 0.1f;
-    [SerializeField] protected float dropDelay = 0.05f;
-    [SerializeField] protected float autoDropTimer = 0f;
-    [SerializeField] protected float moveTimer = 0f;
-    [SerializeField] protected float dropTimer = 0f;
-    [SerializeField] protected bool hasLanded = false;
-    [SerializeField] protected bool isBlockLeft = false;
-    [SerializeField] protected bool isBlockRight = false;
-
-    [SerializeField] protected LayerMask blockLayer = -1;
-
-    void Update()
+    [SerializeField] protected int rotationState = 0;
+    public int RotationState => rotationState;
+    [SerializeField] protected Vector3Int[] cells = new Vector3Int[4];
+    public Vector3Int[] Cells => cells;
+    protected Vector3Int position = new Vector3Int(0, 9, 0);
+    private float fallTimer = 0f;
+    private float fallInterval = 1f;
+    private bool isControl = true;
+    private void Update()
     {
-
-        if (transform.parent == null || hasLanded) return;
-
-        this.CheckBlockLeftRight();
-        HandleMovement();
-        HandleRotation();
-        HandleAutoDrop();
-        if (Input.GetKey(KeyCode.RightArrow) && moveTimer >= moveDelay)
+        if (!isControl) return;
+        this.HandleAutoFall();
+        this.MoveDirection();
+    }
+    protected virtual void MoveDirection()
+    {
+        if(InputManager.Instance.IsLeft) this.Move(Vector3Int.left);
+        if(InputManager.Instance.IsDown) this.Move(Vector3Int.down);
+        if(InputManager.Instance.IsRight) this.Move(Vector3Int.right);
+        if(InputManager.Instance.IsRotat) this.Move(Vector3Int.left);
+    }
+    protected virtual void SetCells(int state)
+    {
+        for (int i = 0; i < 4; i++)
         {
-            Debug.Log("Right Arrow");
-
+            cells[i] = this.tetrominoCtrl.RotationOffsets[state, i] + position;
+        }
+    }
+    protected virtual void HandleAutoFall()
+    {
+        fallTimer += Time.deltaTime;
+        if (fallTimer >= fallInterval)
+        {
+            fallTimer = 0f;
+            Move(Vector3Int.down);
+        }
+    }
+    protected virtual void Rotate()
+    {
+        int newState = (rotationState + 1) % 2;
+        this.SetCells(newState);
+        rotationState = newState;
+    }
+    protected virtual void Move(Vector3Int direction)
+    {
+        Vector3Int newPosition = position + direction;
+        if (IsValidPosition(newPosition))
+        {
+            position = newPosition;
+        }
+        else if (direction == Vector3Int.down)
+        {
+            PlaceOnGrid();
         }
     }
 
-    protected override void LoadComponents()
+    protected virtual bool IsValidPosition(Vector3Int newPosition)
     {
-        base.LoadComponents();
-        this.LoadCtrl();
-    }
-
-    protected virtual void LoadCtrl()
-    {
-        if (this.ctrl != null) return;
-        this.ctrl = GetComponentInParent<TetrominoCtrl>();
-        Debug.LogWarning(transform.name + ": LoadCtrl", gameObject);
-
-    }
-    void HandleMovement()
-    {
-        moveTimer += Time.deltaTime;
-        dropTimer += Time.deltaTime;
-
-        this.MoveLeft();
-        this.MoveRight();
-        this.MoveDown();
-    }
-    protected virtual void MoveLeft()
-    {
-        Transform parent = transform.parent;
-        if (Input.GetKey(KeyCode.RightArrow) && moveTimer >= moveDelay)
+        foreach (var cell in cells)
         {
-            Debug.Log("Right Arrow");
-            if (parent.position.x + moveSpeed <= maxX && !this.IsBlockedRight())
+            Vector3Int checkPos = cell + newPosition - position;
+            if (!tetrominoCtrl.GridManager.IsInsideGrid(checkPos))
             {
-                parent.position += Vector3.right * moveSpeed;
-                moveTimer = 0f;
+                return false;
+            }
+            if (checkPos.x >= 0 && checkPos.x < tetrominoCtrl.GridManager.With && checkPos.y >= 0 && checkPos.y < tetrominoCtrl.GridManager.Height && checkPos.z >= 0 && checkPos.z < tetrominoCtrl.GridManager.Depth)
+            {
+                if (tetrominoCtrl.GridManager.grid[checkPos.x, checkPos.x, checkPos.x] != null)
+                {
+                    return false;
+                }
             }
         }
+        return true;
     }
 
-    protected virtual void MoveRight()
+    protected virtual void PlaceOnGrid()
     {
-        Transform parent = transform.parent;
-
-        if (Input.GetKey(KeyCode.LeftArrow) && moveTimer >= moveDelay)
+        for (int i = 0; i < cells.Length; i++)
         {
-            if (parent.position.x - moveSpeed >= minX && !this.IsBlockedLeft())
+            if (cells[i].x >= 0 && cells[i].x < tetrominoCtrl.GridManager.With && cells[i].y >= 0 && cells[i].y < tetrominoCtrl.GridManager.Height && cells[i].z >= 0 && cells[i].z < tetrominoCtrl.GridManager.Depth)
             {
-                parent.position += Vector3.left * moveSpeed;
-                moveTimer = 0f;
+                tetrominoCtrl.GridManager.PlaceBlock(tetrominoCtrl.Blocks[i].transform);
             }
         }
-    }
-
-    protected virtual void MoveDown()
-    {
-        if (Input.GetKey(KeyCode.DownArrow) && dropTimer >= dropDelay)
-        {
-            TryMoveDown();
-            dropTimer = 0f;
-        }
-    }
-
-    void HandleRotation()
-    {
-        if (!this.ctrl.IsRotatable()) return;
-        if (this.IsBlockedLeft() || this.IsBlockedRight()) return;
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            transform.parent.Rotate(0f, 0f, -90f);
-            ClampPosition();
-        }
-    }
-
-    void HandleAutoDrop()
-    {
-        autoDropTimer += Time.deltaTime;
-        if (autoDropTimer >= autoDropInterval)
-        {
-            TryMoveDown();
-            autoDropTimer = 0f;
-        }
-    }
-
-    void TryMoveDown()
-    {
-        if (this.IsLanded()) return;
-        transform.parent.position += Vector3.down * dropSpeed;
-    }
-
-    public bool IsLanded()
-    {
-        return hasLanded;
-    }
-
-    public void SetLandedState(bool state)
-    {
-        this.hasLanded = state;
-        //if(this.hasLanded) this.OnBlockLanded();
-        Debug.Log("SetCollisionState", gameObject);
-    }
-
-    void OnBlockLanded()
-    {
-        Debug.Log("Block has landed: "+transform.parent.name, gameObject);
-    }
-
-    void ClampPosition()
-    {
-        Transform parent = transform.parent;
-        Vector3 clampedPosition = parent.position;
-        clampedPosition.x = Mathf.Clamp(clampedPosition.x, minX, maxX);
-        clampedPosition.y = Mathf.Max(clampedPosition.y, minY);
-        parent.position = clampedPosition;
-    }
-
-    protected bool IsBlockedLeft()
-    {
-        return this.isBlockLeft;
-    }
-
-    protected bool IsBlockedRight()
-    {
-        return this.isBlockRight;
-    }
-
-
-    void OnDrawGizmos()
-    {
-        foreach (Transform child in transform)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(child.position, Vector3.left * moveSpeed);
-            Gizmos.DrawRay(child.position, Vector3.right * moveSpeed);
-        }
-    }
-
-    protected virtual void CheckBlockLeftRight()
-    {
-        bool isBlockLeft = false;
-        bool isBlockRight = false;
-        foreach (CubeCollision cube in this.ctrl.Cubes)
-        {
-            if (cube.IsBlockLeft) isBlockLeft = true;
-            if (cube.IsBlockRight) isBlockRight = true;
-        }
-
-        this.isBlockLeft = isBlockLeft;
-        this.isBlockRight = isBlockRight;
+        tetrominoCtrl.GridManager.ClearFullRows();
+        this.isControl = false;
+        TetrisSpawner tetrisSpawner = FindFirstObjectByType<TetrisSpawner>();
+        tetrisSpawner.SpawnNewBlock();
     }
 }

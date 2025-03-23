@@ -1,19 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public abstract class TetrominoCtrl : PoolObj
 {
     [SerializeField] protected TetrominoMover mover;
     public TetrominoMover Mover => mover;
+    [SerializeField] protected GridManager gridManager;
+    public GridManager GridManager => gridManager;
+    [SerializeField] protected GameObject[] blocks = new GameObject[4];
+    public GameObject[] Blocks => blocks; 
 
-    [SerializeField] protected List<CubeCollision> cubes;
-    public List<CubeCollision> Cubes => cubes;
+    [SerializeField] protected Vector3Int[,] rotationOffsets;
+    public Vector3Int[,] RotationOffsets => rotationOffsets;
 
     protected override void LoadComponents()
     {
         base.LoadComponents();
         this.LoadMover();
-        this.LoadCubes();
+        this.LoadGridManager();
+        this.SetOffset();
     }
 
     protected virtual void LoadMover()
@@ -22,14 +28,13 @@ public abstract class TetrominoCtrl : PoolObj
         this.mover = GetComponentInChildren<TetrominoMover>();
         Debug.LogWarning(transform.name + ": LoadMover", gameObject);
     }
-
-    protected virtual void LoadCubes()
+    protected virtual void LoadGridManager()
     {
-        if (this.cubes.Count > 0) return;
-        CubeCollision[] arrayCubes = transform.GetComponentsInChildren<CubeCollision>();
-        this.cubes = new List<CubeCollision>(arrayCubes);
-        Debug.LogWarning(transform.name + ": LoadCubes", gameObject);
+        if(this.gridManager != null) return;
+        this.gridManager = FindFirstObjectByType<GridManager>();
+        Debug.LogWarning(gameObject.name + " LoadGridManager", gameObject);
     }
+    protected abstract void SetOffset();
 
     public virtual bool IsRotatable()
     {

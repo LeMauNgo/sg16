@@ -6,4 +6,9 @@ public class TetrominoTee : TetrominoCtrl
     {
         return TetrominoCode.Tee.ToString();
     }
+
+    protected override void SetOffset()
+    {
+        //throw new System.NotImplementedException();
+    }
 }
