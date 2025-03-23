@@ -3,13 +3,14 @@
 public class TetrisStick : MonoBehaviour
 {
     public Vector3Int[] cells = new Vector3Int[4];
-    private int rotationState = 0;
+    public int rotationState = 0;
     protected Vector3Int position = new Vector3Int(0, 9, 0); // Vị trí khởi đầu
     private float fallTimer = 0f;
     private float fallInterval = 1f; // Thời gian rơi tự động
     private bool isControl = true;
     private GameObject[] blocks = new GameObject[4];
     public GameObject blockPrefab; // Prefab khối lập phương 3D
+    public GridManager grid;
 
     private static readonly Vector3Int[,] rotationOffsets = new Vector3Int[2, 4]
     {
@@ -66,7 +67,7 @@ public class TetrisStick : MonoBehaviour
         UpdateVisuals();
     }
 
-    private void UpdateVisuals()
+    protected void UpdateVisuals()
     {
         for (int i = 0; i < 4; i++)
         {
@@ -74,7 +75,7 @@ public class TetrisStick : MonoBehaviour
         }
     }
 
-    public void Rotate()
+    public virtual void Rotate()
     {
         int newState = (rotationState + 1) % 2;
         SetCells(newState);
@@ -102,18 +103,13 @@ public class TetrisStick : MonoBehaviour
         foreach (var cell in cells)
         {
             Vector3Int checkPos = cell + newPosition - position;
-            if (!TetrisGrid.IsInsideGrid(checkPos))
+            if (!grid.IsInsideGrid(checkPos))
             {
                 return false;
             }
-
-            int gridX = checkPos.x + TetrisGrid.width / 2;
-            int gridY = checkPos.y + TetrisGrid.height / 2;
-            int gridZ = checkPos.z;
-
-            if (gridX >= 0 && gridX < TetrisGrid.width && gridY >= 0 && gridY < TetrisGrid.height && gridZ >= 0 && gridZ < TetrisGrid.depth)
+            if (checkPos.x >= 0 && checkPos.x < grid.With && checkPos.y >= 0 && checkPos.y < grid.Height && checkPos.z >= 0 && checkPos.z < grid.Depth)
             {
-                if (TetrisGrid.grid[gridX, gridY, gridZ] != null)
+                if (grid.grid[checkPos.x, checkPos.x, checkPos.x] != null)
                 {
                     return false;
                 }
@@ -124,22 +120,21 @@ public class TetrisStick : MonoBehaviour
 
     public void PlaceOnGrid()
     {
-        foreach (var cell in cells)
+        for (int i = 0; i < cells.Length; i++)
         {
-            int gridX = cell.x + TetrisGrid.width / 2;
-            int gridY = cell.y + TetrisGrid.height / 2;
-            int gridZ = cell.z;
-            if (gridX >= 0 && gridX < TetrisGrid.width && gridY >= 0 && gridY < TetrisGrid.height && gridZ >= 0 && gridZ < TetrisGrid.depth)
+            if (cells[i].x >= 0 && cells[i].x < grid.With && cells[i].y >= 0 && cells[i].y < grid.Height && cells[i].z >= 0 && cells[i].z < grid.Depth)
             {
-                TetrisGrid.grid[gridX, gridY, gridZ] = blocks[0].transform;
+                grid.PlaceBlock(blocks[i].transform);
             }
         }
-        TetrisGrid.ClearFullRows();
+        grid.ClearFullRows();
         this.isControl = false;
         TetrisSpawner tetrisSpawner = FindFirstObjectByType<TetrisSpawner>();
         tetrisSpawner.SpawnNewBlock();
     }
 }
+
+
 
 
 

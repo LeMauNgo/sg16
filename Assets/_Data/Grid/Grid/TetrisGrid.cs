@@ -1,17 +1,39 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class TetrisGrid : MonoBehaviour
 {
-    public static int width = 11; // -5 đến 5 (tổng 11 ô)
-    public static int height = 21; // -10 đến 10 (tổng 21 ô)
-    public static int depth = 1; // Trục Z chỉ có 1
-    public static Transform[,,] grid = new Transform[width, height, depth];
+    public int width = 11; // -5 đến 5 (tổng 11 ô)
+    public int height = 21; // -10 đến 10 (tổng 21 ô)
+    public int depth = 1; // Trục Z chỉ có 1
 
-    private static int xOffset = 5; // Để dịch chuyển chỉ mục index trong mảng
-    private static int yOffset = 10; // Dịch chuyển theo trục Y
+    [System.Serializable]
+    public class RowData
+    {
+        public List<Transform> row = new List<Transform>();
+    }
 
+    [SerializeField] private List<RowData> gridRows = new List<RowData>();
+    public Transform[,,] grid;
+
+    private int xOffset = 5; // Để dịch chuyển chỉ mục index trong mảng
+    private int yOffset = 10; // Dịch chuyển theo trục Y
+
+    void Awake()
+    {
+        grid = new Transform[width, height, depth];
+        for (int y = 0; y < height; y++)
+        {
+            RowData newRow = new RowData();
+            for (int x = 0; x < width; x++)
+            {
+                newRow.row.Add(null);
+            }
+            gridRows.Add(newRow);
+        }
+    }
     // Kiểm tra xem một vị trí có nằm trong lưới hay không
-    public static bool IsInsideGrid(Vector3Int pos)
+    public bool IsInsideGrid(Vector3Int pos)
     {
         int gridX = pos.x + xOffset;
         int gridY = pos.y + yOffset;
@@ -19,7 +41,7 @@ public class TetrisGrid : MonoBehaviour
     }
 
     // Đặt một khối vào lưới
-    public static void PlaceBlock(Transform block)
+    public void PlaceBlock(Transform block)
     {
         Vector3Int pos = Vector3Int.FloorToInt(block.position);
         int gridX = pos.x + xOffset;
@@ -28,11 +50,13 @@ public class TetrisGrid : MonoBehaviour
         if (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height)
         {
             grid[gridX, gridY, 0] = block;
+            gridRows[gridY].row[gridX] = block; // Cập nhật danh sách để hiển thị trong Inspector
+            Debug.Log(gridX + "--------"+  gridY);
         }
     }
 
     // Kiểm tra xem một hàng có đầy không
-    public static bool IsRowFull(int y)
+    public bool IsRowFull(int y)
     {
         int gridY = y + yOffset;
         if (gridY < 0 || gridY >= height) return false;
@@ -47,7 +71,7 @@ public class TetrisGrid : MonoBehaviour
     }
 
     // Xóa một hàng
-    public static void ClearRow(int y)
+    public void ClearRow(int y)
     {
         int gridY = y + yOffset;
         if (gridY < 0 || gridY >= height) return;
@@ -59,11 +83,12 @@ public class TetrisGrid : MonoBehaviour
             {
                 Destroy(grid[gridX, gridY, 0].gameObject);
                 grid[gridX, gridY, 0] = null;
+                gridRows[gridY].row[gridX] = null; // Cập nhật danh sách hiển thị
             }
         }
     }
 
-    public static void MoveRowDown(int y)
+    public void MoveRowDown(int y)
     {
         int gridY = y + yOffset;
         if (gridY <= 0 || gridY >= height) return;
@@ -76,11 +101,13 @@ public class TetrisGrid : MonoBehaviour
                 grid[gridX, gridY - 1, 0] = grid[gridX, gridY, 0];
                 grid[gridX, gridY, 0].position += Vector3.down;
                 grid[gridX, gridY, 0] = null;
+                gridRows[gridY - 1].row[gridX] = gridRows[gridY].row[gridX];
+                gridRows[gridY].row[gridX] = null;
             }
         }
     }
 
-    public static void MoveAllRowsDown(int startY)
+    public void MoveAllRowsDown(int startY)
     {
         for (int y = startY; y <= 10; y++)
         {
@@ -88,7 +115,7 @@ public class TetrisGrid : MonoBehaviour
         }
     }
 
-    public static void ClearFullRows()
+    public void ClearFullRows()
     {
         for (int y = -10; y <= 10; y++)
         {

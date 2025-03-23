@@ -4,10 +4,10 @@ using UnityEngine;
 public abstract class TetrominoCtrl : PoolObj
 {
     [SerializeField] protected TetrominoMover mover;
-    public TetrominoMover Mover { get { return mover; } }
+    public TetrominoMover Mover => mover;
 
     [SerializeField] protected List<CubeCollision> cubes;
-    public List<CubeCollision> Cubes { get { return cubes; } }
+    public List<CubeCollision> Cubes => cubes;
 
     protected override void LoadComponents()
     {
