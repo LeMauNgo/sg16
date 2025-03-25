@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class GridManager : SaiBehaviour
 {
@@ -10,7 +11,8 @@ public class GridManager : SaiBehaviour
     [SerializeField] protected int depth = 1; 
     public int Depth => depth;
     [SerializeField] private List<RowData> gridRows = new List<RowData>();
-    public Transform[,,] grid;
+    public List<RowData> GridRows => gridRows;
+    //public Transform[,,] grid;
     protected override void Start()
     {
         base.Start();
@@ -18,7 +20,7 @@ public class GridManager : SaiBehaviour
     }
     protected virtual void DebugGrid()
     {
-        grid = new Transform[width, height, depth];
+        //grid = new Transform[width, height, depth];
         for (int y = 0; y < height; y++)
         {
             RowData newRow = new RowData();
@@ -40,9 +42,7 @@ public class GridManager : SaiBehaviour
 
         if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height)
         {
-            grid[pos.x, pos.y, 0] = block;
-            gridRows[pos.y].row[pos.x] = block; // Cập nhật danh sách để hiển thị trong Inspector
-            Debug.Log(pos.x + "--------" + pos.y);
+            gridRows[pos.y].row[pos.x] = block;
         }
     }
 
@@ -50,9 +50,9 @@ public class GridManager : SaiBehaviour
     {
         if (y < 0 || y >= height) return false;
 
-        for (int x = 0; x <= 10; x++)
+        for (int x = 0; x < 10; x++)
         {
-            if (x < 0 || x >= width || grid[x, y, 0] == null)
+            if (x < 0 || x >= width || gridRows[y].row[x] == null)
                 return false;
         }
         return true;
@@ -62,37 +62,35 @@ public class GridManager : SaiBehaviour
     {
         if (y < 0 || y >= height) return;
 
-        for (int x = 0; x <= 10; x++)
+        for (int x = 0; x < 10; x++)
         {
-            if (x >= 0 && x < width && grid[x, y, 0] != null)
+            if (x >= 0 && x < width && gridRows[y].row[x] != null)
             {
-                Destroy(grid[x, y, 0].gameObject);
-                grid[x, y, 0] = null;
+                gridRows[y].row[x].gameObject.SetActive(false);
                 gridRows[y].row[x] = null;
+                //gridRows[y].row[x] = null;
             }
         }
     }
 
     public void MoveRowDown(int y)
     {
-        if (y <= 0 || y >= height) return;
+        if (y < 0 || y >= height) return;
 
-        for (int x = 0; x <= 10; x++)
+        for (int x = 0; x < 10; x++)
         {
-            if (x >= 0 && x < width && grid[x, y, 0] != null)
+            if (x >= 0 && x < width && gridRows[y].row[x] != null)
             {
-                grid[x, y - 1, 0] = grid[x, y, 0];
-                grid[x, y, 0].position += Vector3.down;
-                grid[x, y, 0] = null;
                 gridRows[y - 1].row[x] = gridRows[y].row[x];
+                gridRows[y].row[x].transform.position += Vector3.down;
                 gridRows[y].row[x] = null;
             }
         }
     }
-
+    //protected 
     public void MoveAllRowsDown(int startY)
     {
-        for (int y = startY; y <= 10; y++)
+        for (int y = startY; y < 22; y++)
         {
             MoveRowDown(y);
         }
@@ -100,7 +98,7 @@ public class GridManager : SaiBehaviour
 
     public void ClearFullRows()
     {
-        for (int y = -10; y <= 10; y++)
+        for (int y = -10; y < 10; y++)
         {
             if (IsRowFull(y))
             {

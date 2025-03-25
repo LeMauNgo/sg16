@@ -9,6 +9,12 @@ public class TetrominoTee : TetrominoCtrl
 
     protected override void SetOffset()
     {
-        //throw new System.NotImplementedException();
+        this.rotationOffsets = new Vector3Int[4, 4]
+        {
+             { new Vector3Int(0, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(1, 0, 0), new Vector3Int(0, 1, 0) }, // 0° 
+            { new Vector3Int(0, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(0, 1, 0), new Vector3Int(1, 0, 0) }, // 90°
+            { new Vector3Int(0, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(1, 0, 0), new Vector3Int(0, -1, 0) }, // 180°
+            { new Vector3Int(0, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(0, 1, 0), new Vector3Int(-1, 0, 0) }  // 270°
+        };
     }
 }

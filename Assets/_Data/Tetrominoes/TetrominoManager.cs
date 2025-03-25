@@ -1,9 +1,10 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class TetrominoManager : SaiBehaviour
+public class TetrominoManager : SaiSingleton<TetrominoManager>
 {
     [SerializeField] protected TetrominoSpanwer spanwer;
+    public TetrominoSpanwer Spanwer => spanwer;
     protected override void LoadComponents()
     {
         base.LoadComponents();
