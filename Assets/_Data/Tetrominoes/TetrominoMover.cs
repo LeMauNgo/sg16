@@ -42,6 +42,7 @@ public class TetrominoMover : TertrominoesAbs
         }
         else if (direction == Vector3Int.down)
         {
+            this.isMoving = false;
             PlaceOnGrid();
         }
     }
@@ -77,7 +78,6 @@ public class TetrominoMover : TertrominoesAbs
         }
         tetrominoCtrl.GridManager.ClearFullRows();
         TetrominoManager.Instance.Spanwer.SpawnTetromino();
-        this.isMoving = false;
         this.tetrominoCtrl.Rotation.SetRotation(false);
     }
 }
