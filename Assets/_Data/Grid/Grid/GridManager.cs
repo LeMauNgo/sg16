@@ -11,7 +11,6 @@ public class GridManager : SaiSingleton<GridManager>
     public int Depth => depth;
     [SerializeField] private List<RowData> gridRows = new List<RowData>();
     public List<RowData> GridRows => gridRows;
-    //public Transform[,,] grid;
     protected override void Start()
     {
         base.Start();
@@ -19,7 +18,6 @@ public class GridManager : SaiSingleton<GridManager>
     }
     protected virtual void DebugGrid()
     {
-        //grid = new Transform[width, height, depth];
         for (int y = 0; y < height; y++)
         {
             RowData newRow = new RowData();
@@ -29,6 +27,11 @@ public class GridManager : SaiSingleton<GridManager>
             }
             gridRows.Add(newRow);
         }
+    }
+    public virtual void GenerateGrid(int gridWidth, int gridHeight)
+    {
+        this.width = gridWidth;
+        this.height = gridHeight;
     }
     public bool IsInsideGrid(Vector3Int pos)
     {
@@ -100,7 +103,6 @@ public class GridManager : SaiSingleton<GridManager>
             }
         }
     }
-    //protected 
     public void MoveAllRowsDown(int startY)
     {
         for (int y = startY; y < 22; y++)
@@ -126,7 +128,6 @@ public class GridManager : SaiSingleton<GridManager>
     }
     protected bool IsOccupied(Vector3Int gridPos)
     {
-        // Nếu ngoài lưới thì coi như bị chiếm
         if (gridPos.x < 0 || gridPos.x >= width || gridPos.y < 0 || gridPos.y >= height)
             return true;
 
@@ -136,11 +137,11 @@ public class GridManager : SaiSingleton<GridManager>
     {
         foreach (CubeTetrominoes block in tetromino.TertrominoesVisual.Cubes)
         {
-            Vector3Int gridPos = /*spawnPosition +*/ Vector3Int.RoundToInt(block.transform.position);
+            Vector3Int gridPos = Vector3Int.RoundToInt(block.transform.position);
             Debug.Log(gridPos);
             if (!IsInsideGrid(gridPos) || IsOccupied(gridPos))
             {
-                return false; // Vị trí spawn đã bị chiếm
+                return false;
             }
         }
         return true;

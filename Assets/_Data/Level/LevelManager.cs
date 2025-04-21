@@ -50,13 +50,37 @@ public class LevelManager : MonoBehaviour
             CurrentLevelIndex = index;
             Debug.Log("Level loaded: " + CurrentLevel.levelID);
             // Gọi sự kiện hoặc logic khởi tạo level ở đây
+            InitLevel(CurrentLevel);
         }
         else
         {
             Debug.LogError("Invalid level index: " + index);
         }
     }
+    private void InitLevel(LevelData level)
+    {
+        // Reset map
+        GridManager.Instance.ClearGrid();
 
+        // Tạo lưới mới
+        GridManager.Instance.GenerateGrid(level.gridWidth, level.gridHeight);
+
+        // Đặt các block khởi đầu
+        foreach (var block in level.initialBlocks)
+        {
+            //GridManager.Instance.SpawnBlock(block.x, block.y, block.type);
+        }
+
+        // Hiển thị gợi ý nếu có
+        //if (!string.IsNullOrEmpty(level.levelHint))
+        //    UIManager.Instance.ShowHint(level.levelHint);
+
+        // Nếu cần đếm giờ giới hạn
+        //if (level.maxTimeSeconds > 0)
+            //Timer.Instance.StartCountdown(level.maxTimeSeconds);
+
+        // Có thể gọi thêm hiệu ứng mở đầu, âm thanh, v.v.
+    }
     public void LoadNextLevel()
     {
         LoadLevel(CurrentLevelIndex + 1);
