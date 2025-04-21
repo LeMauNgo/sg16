@@ -4,16 +4,16 @@ using UnityEngine.UIElements;
 
 public abstract class TetrominoCtrl : PoolObj
 {
+    [SerializeField] protected int playerID;
+    public int PlayerID => playerID;
     [SerializeField] protected TetrominoMover mover;
     public TetrominoMover Mover => mover;
-    [SerializeField] protected GridManager gridManager;
-    public GridManager GridManager => gridManager;
     [SerializeField] protected TertrominoesVisual visual;
     public TertrominoesVisual TertrominoesVisual => visual;
     [SerializeField] protected TertrominoesRotation rotation;
     public TertrominoesRotation Rotation => rotation;
-    [SerializeField] protected GameObject[] blocks = new GameObject[4];
-    public GameObject[] Blocks => blocks; 
+    [SerializeField] protected CubeTetrominoes[] blocks = new CubeTetrominoes[4];
+    public CubeTetrominoes[] Blocks => blocks; 
 
     [SerializeField] protected Vector3Int[,] rotationOffsets;
     public Vector3Int[,] RotationOffsets => rotationOffsets;
@@ -28,7 +28,6 @@ public abstract class TetrominoCtrl : PoolObj
     {
         base.LoadComponents();
         this.LoadMover();
-        this.LoadGridManager();
         this.SetOffset();
         this.LoadTertrominoesVisual();
         this.LoadTertrominoesRotation();
@@ -36,7 +35,6 @@ public abstract class TetrominoCtrl : PoolObj
     private void OnEnable()
     {
         this.rotationState = 0;
-        this.position = new Vector3Int(3, 20, 0);
         this.SetCells();
     }
     protected virtual void LoadMover()
@@ -44,12 +42,6 @@ public abstract class TetrominoCtrl : PoolObj
         if (this.mover != null) return;
         this.mover = GetComponentInChildren<TetrominoMover>();
         Debug.LogWarning(transform.name + ": LoadMover", gameObject);
-    }
-    protected virtual void LoadGridManager()
-    {
-        if(this.gridManager != null) return;
-        this.gridManager = FindFirstObjectByType<GridManager>();
-        Debug.LogWarning(gameObject.name + " LoadGridManager", gameObject);
     }
     protected virtual void LoadTertrominoesVisual()
     {
@@ -67,6 +59,10 @@ public abstract class TetrominoCtrl : PoolObj
     public virtual void SetPosition(Vector3Int pos)
     {
         this.position = pos;
+    }
+    public virtual void SetPlayerID(int id)
+    {
+        this.playerID = id;
     }
     public virtual void SetCells()
     {

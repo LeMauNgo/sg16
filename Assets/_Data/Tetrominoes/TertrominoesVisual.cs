@@ -6,6 +6,7 @@ using System.Linq;
 public class TertrominoesVisual : TertrominoesAbs
 {
     [SerializeField] protected List<CubeTetrominoes> cubes;
+    public List<CubeTetrominoes> Cubes => cubes;
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -22,7 +23,7 @@ public class TertrominoesVisual : TertrominoesAbs
     {
         for (int i = 0; i < 4; i++)
         {
-            tetrominoCtrl.Blocks[i] = cubes[i].gameObject;
+            tetrominoCtrl.Blocks[i] = cubes[i];
             cubes[i].gameObject.SetActive(true);
         }
     }
@@ -44,18 +45,12 @@ public class TertrominoesVisual : TertrominoesAbs
     }
     private void OnEnable()
     {
-        CreateVisuals();
-        this.Despawn();
+        this.CreateVisuals();
+        this.UpdateVisuals();
     }
-    protected virtual void Despawn()
+    public virtual void Despawn()
     {
-        if (!this.isDespawn())
-        {
-            Invoke(nameof(Despawn), 1f);
-        }
-        else
-        {
-            this.tetrominoCtrl.Despawn.DoDespawn();
-        }
+        if (!this.isDespawn()) return;
+        this.tetrominoCtrl.Despawn.DoDespawn();
     }
 }

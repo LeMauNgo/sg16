@@ -15,7 +15,14 @@ public class TertrominoesRotation : TertrominoesAbs
     private void Update()
     {
         if (!this.isRotation) return;
-        if (InputManager.Instance.IsRotat) this.Rotate();
+        if (tetrominoCtrl.PlayerID == 1)
+        {
+            if (InputManager.Instance.Player1State == PlayerState.Rotate) this.Rotate();
+        }
+        else if (tetrominoCtrl.PlayerID == 2)
+        {
+            if (InputManager.Instance.Player2State == PlayerState.Rotate) this.Rotate();
+        }
     }
     protected virtual void Rotate()
     {
@@ -38,7 +45,7 @@ public class TertrominoesRotation : TertrominoesAbs
     {
         foreach (var cell in newCells)
         {
-            if (!tetrominoCtrl.GridManager.IsInsideGrid(cell) || tetrominoCtrl.GridManager.GridRows[cell.y].row[cell.x] != null)
+            if (!GridManager.Instance.IsInsideGrid(cell) || GridManager.Instance.GridRows[cell.y].row[cell.x] != null)
             {
                 return false;
             }

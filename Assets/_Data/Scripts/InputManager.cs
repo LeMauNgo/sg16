@@ -2,23 +2,35 @@ using UnityEngine;
 
 public class InputManager : SaiSingleton<InputManager>
 {
-    [SerializeField] protected bool isLeft;
-    public bool IsLeft => isLeft;
-    [SerializeField] protected bool isRight;
-    public bool IsRight => isRight;
-    [SerializeField] protected bool isRotat;
-    public bool IsRotat => isRotat;
-    [SerializeField] protected bool isDown;
-    public bool IsDown => isDown;
+    [SerializeField] protected PlayerState Player1;
+    public PlayerState Player1State => Player1;
+    [SerializeField] protected PlayerState Player2;
+    public PlayerState Player2State => Player2;
     private void Update()
     {
         this.HandleInput();
     }
     private void HandleInput()
     {
-        isLeft = Input.GetKeyDown(KeyCode.LeftArrow) ? true : false;
-        isRight = Input.GetKeyDown(KeyCode.RightArrow) ? true : false;
-        isRotat = Input.GetKeyDown(KeyCode.UpArrow) ? true : false;
-        isDown = Input.GetKeyDown(KeyCode.DownArrow) ? true : false;
+        Player1 = PlayerState.None;
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+            Player1 = PlayerState.Left;
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+            Player1 = PlayerState.Right;
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+            Player1 = PlayerState.Rotate;
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+            Player1 = PlayerState.Down;
+
+        // Player 2
+        Player2 = PlayerState.None;
+        if (Input.GetKeyDown(KeyCode.A))
+            Player2 = PlayerState.Left;
+        else if (Input.GetKeyDown(KeyCode.D))
+            Player2 = PlayerState.Right;
+        else if (Input.GetKeyDown(KeyCode.W))
+            Player2 = PlayerState.Rotate;
+        else if (Input.GetKeyDown(KeyCode.S))
+            Player2 = PlayerState.Down;
     }
 }

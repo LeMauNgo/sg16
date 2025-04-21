@@ -10,6 +10,8 @@ public abstract class Spawner<T> : SaiBehaviour where T : PoolObj
     public PoolPrefabs<T> PoolPrefabs => poolPrefabs;
 
     [SerializeField] protected List<T> inPoolObjs = new();
+    [SerializeField] protected List<T> outPoolObjs = new();
+    public List<T> OutPoolObjs => outPoolObjs;
 
     protected override void LoadComponents()
     {
@@ -51,11 +53,13 @@ public abstract class Spawner<T> : SaiBehaviour where T : PoolObj
             newObject = Instantiate(prefab);
             this.spawnCount++;
             this.UpdateName(prefab.transform, newObject.transform);
+            this.outPoolObjs.Add(newObject);
         }
-
+        this.outPoolObjs.Add(newObject);
         if (this.poolHolder != null) newObject.transform.parent = this.poolHolder.transform;
 
         return newObject;
+
     }
 
     public virtual T Spawn(T prefab, Vector3 postion)
@@ -74,9 +78,18 @@ public abstract class Spawner<T> : SaiBehaviour where T : PoolObj
     {
         if (obj is MonoBehaviour monoBehaviour)
         {
+            if (!monoBehaviour.gameObject.activeInHierarchy) return;
             monoBehaviour.gameObject.SetActive(false);
             this.AddObjectToPool(obj);
         }
+    }
+    public virtual void DespawnAll()
+    {
+        foreach (T obj in this.outPoolObjs)
+        {
+            this.Despawn(obj);
+        }
+        this.outPoolObjs.Clear();
     }
 
     protected virtual void AddObjectToPool(T obj)

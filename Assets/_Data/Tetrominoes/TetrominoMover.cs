@@ -18,9 +18,18 @@ public class TetrominoMover : TertrominoesAbs
     }
     protected virtual void MoveDirection()
     {
-        if(InputManager.Instance.IsLeft) this.Move(Vector3Int.left);
-        if(InputManager.Instance.IsDown) this.Move(Vector3Int.down);
-        if(InputManager.Instance.IsRight) this.Move(Vector3Int.right);
+        if (tetrominoCtrl.PlayerID == 1)
+        {
+            if (InputManager.Instance.Player1State == PlayerState.Left) this.Move(Vector3Int.left);
+            if (InputManager.Instance.Player1State == PlayerState.Down) this.Move(Vector3Int.down);
+            if (InputManager.Instance.Player1State == PlayerState.Right) this.Move(Vector3Int.right);
+        }
+        else if (tetrominoCtrl.PlayerID == 2)
+        {
+            if (InputManager.Instance.Player2State == PlayerState.Left) this.Move(Vector3Int.left);
+            if (InputManager.Instance.Player2State == PlayerState.Down) this.Move(Vector3Int.down);
+            if (InputManager.Instance.Player2State == PlayerState.Right) this.Move(Vector3Int.right);
+        }
     }
     protected virtual void HandleAutoFall()
     {
@@ -52,13 +61,13 @@ public class TetrominoMover : TertrominoesAbs
         foreach (var cell in this.tetrominoCtrl.Cells)
         {
             Vector3Int checkPos = cell + newPosition - this.tetrominoCtrl.Position;
-            if (!tetrominoCtrl.GridManager.IsInsideGrid(checkPos))
+            if (!GridManager.Instance.IsInsideGrid(checkPos))
             {
                 return false;
             }
-            if (checkPos.x >= 0 && checkPos.x < tetrominoCtrl.GridManager.With && checkPos.y >= 0 && checkPos.y < tetrominoCtrl.GridManager.Height && checkPos.z >= 0 && checkPos.z < tetrominoCtrl.GridManager.Depth)
+            if (checkPos.x >= 0 && checkPos.x < GridManager.Instance.With && checkPos.y >= 0 && checkPos.y < GridManager.Instance.Height && checkPos.z >= 0 && checkPos.z < GridManager.Instance.Depth)
             {
-                if (tetrominoCtrl.GridManager.GridRows[checkPos.y].row[checkPos.x] != null)
+                if (GridManager.Instance.GridRows[checkPos.y].row[checkPos.x] != null)
                 {
                     return false;
                 }
@@ -71,13 +80,20 @@ public class TetrominoMover : TertrominoesAbs
     {
         for (int i = 0; i < this.tetrominoCtrl.Cells.Length; i++)
         {
-            if (this.tetrominoCtrl.Cells[i].x >= 0 && this.tetrominoCtrl.Cells[i].x < tetrominoCtrl.GridManager.With && this.tetrominoCtrl.Cells[i].y >= 0 && this.tetrominoCtrl.Cells[i].y < tetrominoCtrl.GridManager.Height && this.tetrominoCtrl.Cells[i].z >= 0 && this.tetrominoCtrl.Cells[i].z < tetrominoCtrl.GridManager.Depth)
+            if (this.tetrominoCtrl.Cells[i].x >= 0 && this.tetrominoCtrl.Cells[i].x < GridManager.Instance.With && this.tetrominoCtrl.Cells[i].y >= 0 && this.tetrominoCtrl.Cells[i].y < GridManager.Instance.Height && this.tetrominoCtrl.Cells[i].z >= 0 && this.tetrominoCtrl.Cells[i].z < GridManager.Instance.Depth)
             {
-                tetrominoCtrl.GridManager.PlaceBlock(tetrominoCtrl.Blocks[i].transform);
+                GridManager.Instance.PlaceBlock(tetrominoCtrl.Blocks[i]);
             }
         }
-        tetrominoCtrl.GridManager.ClearFullRows();
-        TetrominoManager.Instance.Spanwer.SpawnTetromino();
+        GridManager.Instance.ClearFullRows();
+        if(this.tetrominoCtrl.PlayerID == 1)
+        {
+            TetrominoManager.Instance.Spanwer.SpawnTetromino(1, new Vector3Int(3, 20, 0));
+        }
+        else if (this.tetrominoCtrl.PlayerID == 2)
+        {
+            TetrominoManager.Instance.Spanwer.SpawnTetromino(2, new Vector3Int(13,20,0));
+        }
         this.tetrominoCtrl.Rotation.SetRotation(false);
     }
 }

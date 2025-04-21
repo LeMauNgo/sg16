@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class GridManager : SaiBehaviour
+public class GridManager : SaiSingleton<GridManager>
 {
-    [SerializeField] protected int width = 10;
+    [SerializeField] protected int width = 20;
     public int With => width;
     [SerializeField] protected int height = 22; 
     public int Height => height;
@@ -35,9 +35,9 @@ public class GridManager : SaiBehaviour
         return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height && pos.z == 0;
     }
 
-    public void PlaceBlock(Transform block)
+    public void PlaceBlock(CubeTetrominoes block)
     {
-        Vector3Int pos = Vector3Int.FloorToInt(block.position);
+        Vector3Int pos = Vector3Int.FloorToInt(block.transform.position);
 
         if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height)
         {
@@ -49,25 +49,39 @@ public class GridManager : SaiBehaviour
     {
         if (y < 0 || y >= height) return false;
 
-        for (int x = 0; x < 10; x++)
+        for (int x = 0; x < width; x++)
         {
             if (x < 0 || x >= width || gridRows[y].row[x] == null)
                 return false;
         }
         return true;
     }
-
+    public virtual void ClearGrid()
+    {
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (gridRows[y].row[x] != null)
+                {
+                    gridRows[y].row[x].gameObject.SetActive(false);
+                    gridRows[y].row[x].TertrominoesVisual.Despawn();
+                    gridRows[y].row[x] = null;
+                }
+            }
+        }
+    }
     public void ClearRow(int y)
     {
         if (y < 0 || y >= height) return;
 
-        for (int x = 0; x < 10; x++)
+        for (int x = 0; x < width; x++)
         {
             if (x >= 0 && x < width && gridRows[y].row[x] != null)
             {
                 gridRows[y].row[x].gameObject.SetActive(false);
+                gridRows[y].row[x].TertrominoesVisual.Despawn();
                 gridRows[y].row[x] = null;
-                //gridRows[y].row[x] = null;
             }
         }
     }
@@ -76,7 +90,7 @@ public class GridManager : SaiBehaviour
     {
         if (y < 0 || y >= height) return;
 
-        for (int x = 0; x < 10; x++)
+        for (int x = 0; x < width; x++)
         {
             if (x >= 0 && x < width && gridRows[y].row[x] != null)
             {
@@ -97,14 +111,38 @@ public class GridManager : SaiBehaviour
 
     public void ClearFullRows()
     {
-        for (int y = -10; y < 10; y++)
+        int rowCount = 0;
+        for (int y = 0; y < height; y++)
         {
             if (IsRowFull(y))
             {
+                rowCount++;
                 ClearRow(y);
                 MoveAllRowsDown(y + 1);
                 y--;
             }
         }
+        ScoreManager.Instance.AddScore(rowCount);
+    }
+    protected bool IsOccupied(Vector3Int gridPos)
+    {
+        // Nếu ngoài lưới thì coi như bị chiếm
+        if (gridPos.x < 0 || gridPos.x >= width || gridPos.y < 0 || gridPos.y >= height)
+            return true;
+
+        return gridRows[gridPos.y].row[gridPos.x] != null;
+    }
+    public bool IsValidPosition(TetrominoCtrl tetromino, Vector3Int spawnPosition)
+    {
+        foreach (CubeTetrominoes block in tetromino.TertrominoesVisual.Cubes)
+        {
+            Vector3Int gridPos = /*spawnPosition +*/ Vector3Int.RoundToInt(block.transform.position);
+            Debug.Log(gridPos);
+            if (!IsInsideGrid(gridPos) || IsOccupied(gridPos))
+            {
+                return false; // Vị trí spawn đã bị chiếm
+            }
+        }
+        return true;
     }
 }

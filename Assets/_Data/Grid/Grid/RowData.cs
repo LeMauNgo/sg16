@@ -3,5 +3,5 @@ using UnityEngine;
 [System.Serializable]
 public class RowData
 {
-    public List<Transform> row = new List<Transform>();
+    public List<CubeTetrominoes> row = new List<CubeTetrominoes>();
 }

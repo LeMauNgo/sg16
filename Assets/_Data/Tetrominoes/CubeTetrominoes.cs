@@ -3,6 +3,7 @@ using UnityEngine;
 public class CubeTetrominoes : SaiBehaviour
 {
     [SerializeField] protected TertrominoesVisual tertrominoesVisual;
+    public TertrominoesVisual TertrominoesVisual => tertrominoesVisual;
     [SerializeField] protected bool isShow = true;
     public bool IsShow => isShow;
     protected override void LoadComponents()
