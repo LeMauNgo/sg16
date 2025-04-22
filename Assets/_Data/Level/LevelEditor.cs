@@ -25,33 +25,6 @@ public class LevelEditorWindow : EditorWindow
             levelData.levelID = EditorGUILayout.IntField("Level ID", levelData.levelID);
             levelData.gridWidth = EditorGUILayout.IntField("Grid Width", levelData.gridWidth);
             levelData.gridHeight = EditorGUILayout.IntField("Grid Height", levelData.gridHeight);
-            levelData.requiredKeys = EditorGUILayout.IntField("Required Keys", levelData.requiredKeys);
-            levelData.requiredCombos = EditorGUILayout.IntField("Required Combos", levelData.requiredCombos);
-            levelData.maxTimeSeconds = EditorGUILayout.IntField("Max Time (s)", levelData.maxTimeSeconds);
-            levelData.levelHint = EditorGUILayout.TextField("Hint", levelData.levelHint);
-            levelData.allowSpecialBlocks = EditorGUILayout.Toggle("Allow Special Blocks", levelData.allowSpecialBlocks);
-
-            EditorGUILayout.Space();
-            GUILayout.Label("Initial Blocks", EditorStyles.boldLabel);
-
-            for (int i = 0; i < levelData.initialBlocks.Count; i++)
-            {
-                EditorGUILayout.BeginHorizontal();
-                levelData.initialBlocks[i].x = EditorGUILayout.IntField("X", levelData.initialBlocks[i].x);
-                levelData.initialBlocks[i].y = EditorGUILayout.IntField("Y", levelData.initialBlocks[i].y);
-                levelData.initialBlocks[i].type = (BlockType)EditorGUILayout.EnumPopup("Type", levelData.initialBlocks[i].type);
-                if (GUILayout.Button("Remove"))
-                {
-                    levelData.initialBlocks.RemoveAt(i);
-                    break;
-                }
-                EditorGUILayout.EndHorizontal();
-            }
-
-            if (GUILayout.Button("Add Block"))
-            {
-                levelData.initialBlocks.Add(new BlockSpawnData());
-            }
 
             EditorGUILayout.Space();
 
@@ -74,12 +47,6 @@ public class LevelEditorWindow : EditorWindow
             levelID = level.levelID,
             gridWidth = level.gridWidth,
             gridHeight = level.gridHeight,
-            requiredKeys = level.requiredKeys,
-            requiredCombos = level.requiredCombos,
-            maxTimeSeconds = level.maxTimeSeconds,
-            levelHint = level.levelHint,
-            allowSpecialBlocks = level.allowSpecialBlocks,
-            initialBlocks = level.initialBlocks
         };
 
         string json = JsonUtility.ToJson(jsonData, true);

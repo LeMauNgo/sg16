@@ -6,5 +6,6 @@ public class BtnSiglePlayer : ButttonAbstract
     {
         GameManager.Instance.SetGameMode(GameMode.SinglePlayer);
         GameManager.Instance.StartGame();
+        LevelManager.Instance.LoadLevel(0);
     }
 }
