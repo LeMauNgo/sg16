@@ -48,7 +48,7 @@ public abstract class PoolPrefabs<T> : SaiBehaviour where T : PoolObj
     {
         foreach (T prefab in this.prefabs)
         {
-            if (prefab.name != prefabName) continue;
+            if (prefab.GetName() != prefabName) continue;
             return prefab;
         }
 

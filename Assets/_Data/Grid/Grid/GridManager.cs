@@ -11,11 +11,6 @@ public class GridManager : SaiSingleton<GridManager>
     public int Depth => depth;
     [SerializeField] private List<RowData> gridRows = new List<RowData>();
     public List<RowData> GridRows => gridRows;
-    protected override void Start()
-    {
-        base.Start();
-        this.DebugGrid();
-    }
     protected virtual void DebugGrid()
     {
         for (int y = 0; y < height; y++)
@@ -32,6 +27,10 @@ public class GridManager : SaiSingleton<GridManager>
     {
         this.width = gridWidth;
         this.height = gridHeight;
+
+        this.SpawnWalls(gridWidth, gridHeight);
+        this.DebugGrid();
+
     }
     public bool IsInsideGrid(Vector3Int pos)
     {
@@ -146,4 +145,30 @@ public class GridManager : SaiSingleton<GridManager>
         }
         return true;
     }
+    private void SpawnWalls(int gridWidth, int gridHeight)
+    {
+        for (int y = 0; y < gridHeight; y++)
+        {
+            // Tường trái
+            SpawnWallBlock(new Vector3Int(-1, y));
+
+            // Tường phải
+            SpawnWallBlock(new Vector3Int(gridWidth, y));
+        }
+
+        for (int x = -1; x <= gridWidth; x++)
+        {
+            // Tường đáy
+            SpawnWallBlock(new Vector3Int(x, -1));
+        }
+    }
+
+    private void SpawnWallBlock(Vector3Int pos)
+    {
+        //Instantiate(wallBlockPrefab, GridToWorldPosition(pos), Quaternion.identity);
+        EffectCtrl effectPrefabs = EffectSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(EffectCode.Wall.ToString());
+        EffectCtrl effectCtrl = EffectSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
+        effectCtrl.gameObject.SetActive(true);
+    }
+
 }
