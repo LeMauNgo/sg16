@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TetrominoMover : TertrominoesAbs
+public class TetrominoMover : TertrominoesPlayerAbs
 {
     private float fallTimer = 0f;
     private float fallInterval = 1f;
     [SerializeField]  private bool isMoving;
-    private void OnEnable()
-    {
-        this.isMoving = true;
-    }
     private void Update()
     {
-        if (!isMoving) return;
+        if (!isMoving || !GameManager.Instance.IsPlaying) return;
         this.HandleAutoFall();
         this.MoveDirection();
+    }
+    public virtual void SetMoving(bool isMove)
+    {
+        this.isMoving = isMove;
     }
     protected virtual void MoveDirection()
     {
@@ -82,18 +82,11 @@ public class TetrominoMover : TertrominoesAbs
         {
             if (this.tetrominoCtrl.Cells[i].x >= 0 && this.tetrominoCtrl.Cells[i].x < GridManager.Instance.With && this.tetrominoCtrl.Cells[i].y >= 0 && this.tetrominoCtrl.Cells[i].y < GridManager.Instance.Height && this.tetrominoCtrl.Cells[i].z >= 0 && this.tetrominoCtrl.Cells[i].z < GridManager.Instance.Depth)
             {
-                GridManager.Instance.PlaceBlock(tetrominoCtrl.Blocks[i]);
+                GridManager.Instance.PlaceBlock(tetrominoCtrl.TertrominoesVisual.Cubes[i]);
             }
         }
         GridManager.Instance.ClearFullRows();
-        if(this.tetrominoCtrl.PlayerID == 1)
-        {
-            TetrominoManager.Instance.Spanwer.SpawnTetromino(1, new Vector3Int(3, 20, 0));
-        }
-        else if (this.tetrominoCtrl.PlayerID == 2)
-        {
-            TetrominoManager.Instance.Spanwer.SpawnTetromino(2, new Vector3Int(13,20,0));
-        }
         this.tetrominoCtrl.Rotation.SetRotation(false);
+        PlayerManager.Instance.CreateTetromino(new Vector3Int(GridManager.Instance.With / 2 - 2, GridManager.Instance.Height - 2, 0));
     }
 }

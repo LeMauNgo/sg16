@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class TertrominoesAbs : SaiBehaviour
+public class TertrominoesPlayerAbs : SaiBehaviour
 {
-    [SerializeField] protected TetrominoCtrl tetrominoCtrl;
-    public TetrominoCtrl TetrominoCtrl => tetrominoCtrl;
+    [SerializeField] protected TetrominoPlayer tetrominoCtrl;
+    public TetrominoPlayer TetrominoCtrl => tetrominoCtrl;
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -12,7 +12,7 @@ public class TertrominoesAbs : SaiBehaviour
     protected virtual void LoadTetrominoCtrl()
     {
         if (this.tetrominoCtrl != null) return;
-        this.tetrominoCtrl = GetComponentInParent<TetrominoCtrl>();
+        this.tetrominoCtrl = GetComponentInParent<TetrominoPlayer>();
         Debug.LogWarning(gameObject.name + " LoadTetrominoCtrl", gameObject);
     }
 }

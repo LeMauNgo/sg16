@@ -7,7 +7,7 @@ public class GameUi : UICtrl
     private void OnDisable()
     {
         GridManager.Instance.ClearGrid();
-        TetrominoManager.Instance.Spanwer.DespawnAll();
+        CubeSpawnerManager.Instance.Spanwer.DespawnAll();
         ScoreManager.Instance.ResetScore();
         gameOver.SetActive(false);
     }

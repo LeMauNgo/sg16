@@ -10,9 +10,7 @@ public class GameManager : SaiSingleton<GameManager>
     {
         isPlaying = true;
         UIManager.Instance.ShowUi("GameUi");
-        TetrominoManager.Instance.Spanwer.SpawnTetromino(1, new Vector3Int(3,20,0));
-        if (gameMode != GameMode.TwoPlayer) return;
-        TetrominoManager.Instance.Spanwer.SpawnTetromino(2,new Vector3Int(13,20,0));
+        PlayerManager.Instance.CreateTetromino(new Vector3Int(GridManager.Instance.With / 2 - 2, GridManager.Instance.Height - 2, 0));
         Debug.Log("Game Start");
     }
     public virtual void GameOver()

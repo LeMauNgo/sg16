@@ -1,20 +1,16 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TertrominoesRotation : TertrominoesAbs
+public class TertrominoesRotation : TertrominoesPlayerAbs
 {
     [SerializeField] protected bool isRotation;
     public virtual void SetRotation(bool isRotat)
     {
         this.isRotation = isRotat;
     }
-    private void OnEnable()
-    {
-        this.isRotation = true;
-    }
     private void Update()
     {
-        if (!this.isRotation) return;
+        if (!this.isRotation || !GameManager.Instance.IsPlaying) return;
         if (tetrominoCtrl.PlayerID == 1)
         {
             if (InputManager.Instance.Player1State == PlayerState.Rotate) this.Rotate();
@@ -26,12 +22,12 @@ public class TertrominoesRotation : TertrominoesAbs
     }
     protected virtual void Rotate()
     {
-        int newState = (this.tetrominoCtrl.RotationState + 1) % tetrominoCtrl.RotationOffsets.GetLength(0);
+        int newState = (this.tetrominoCtrl.RotationState + 1) % tetrominoCtrl.RotationOffsets.Count;
         Vector3Int[] newCells = new Vector3Int[4];
 
         for (int i = 0; i < 4; i++)
         {
-            newCells[i] = tetrominoCtrl.RotationOffsets[newState, i] + this.tetrominoCtrl.Position;
+            newCells[i] = tetrominoCtrl.RotationOffsets[newState].cellPositions[i] + this.tetrominoCtrl.Position;
         }
 
         if (IsValidRotation(newCells))

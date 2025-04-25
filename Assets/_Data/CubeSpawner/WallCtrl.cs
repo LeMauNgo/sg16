@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class WallCtrl : EffectCtrl
+public class WallCtrl : CubeCtrl
 {
     public override string GetName()
     {
-        return EffectCode.Wall.ToString();
+        return CubeCode.Wall.ToString();
     }
 }

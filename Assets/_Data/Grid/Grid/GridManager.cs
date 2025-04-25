@@ -27,9 +27,9 @@ public class GridManager : SaiSingleton<GridManager>
     {
         this.width = gridWidth;
         this.height = gridHeight;
-
-        this.SpawnWalls(gridWidth, gridHeight);
         this.DebugGrid();
+        GameManager.Instance.StartGame();
+        this.SpawnWalls(gridWidth, gridHeight);
 
     }
     public bool IsInsideGrid(Vector3Int pos)
@@ -66,8 +66,7 @@ public class GridManager : SaiSingleton<GridManager>
             {
                 if (gridRows[y].row[x] != null)
                 {
-                    gridRows[y].row[x].gameObject.SetActive(false);
-                    gridRows[y].row[x].TertrominoesVisual.Despawn();
+                    gridRows[y].row[x].Despawn.DoDespawn();
                     gridRows[y].row[x] = null;
                 }
             }
@@ -81,8 +80,7 @@ public class GridManager : SaiSingleton<GridManager>
         {
             if (x >= 0 && x < width && gridRows[y].row[x] != null)
             {
-                gridRows[y].row[x].gameObject.SetActive(false);
-                gridRows[y].row[x].TertrominoesVisual.Despawn();
+                gridRows[y].row[x].Despawn.DoDespawn();
                 gridRows[y].row[x] = null;
             }
         }
@@ -104,7 +102,7 @@ public class GridManager : SaiSingleton<GridManager>
     }
     public void MoveAllRowsDown(int startY)
     {
-        for (int y = startY; y < 22; y++)
+        for (int y = startY; y < height; y++)
         {
             MoveRowDown(y);
         }
@@ -132,7 +130,7 @@ public class GridManager : SaiSingleton<GridManager>
 
         return gridRows[gridPos.y].row[gridPos.x] != null;
     }
-    public bool IsValidPosition(TetrominoCtrl tetromino, Vector3Int spawnPosition)
+    public bool IsValidPosition(TetrominoPlayer tetromino, Vector3Int spawnPosition)
     {
         foreach (CubeTetrominoes block in tetromino.TertrominoesVisual.Cubes)
         {
@@ -149,26 +147,46 @@ public class GridManager : SaiSingleton<GridManager>
     {
         for (int y = 0; y < gridHeight; y++)
         {
-            // Tường trái
             SpawnWallBlock(new Vector3Int(-1, y));
-
-            // Tường phải
             SpawnWallBlock(new Vector3Int(gridWidth, y));
         }
 
         for (int x = -1; x <= gridWidth; x++)
         {
-            // Tường đáy
             SpawnWallBlock(new Vector3Int(x, -1));
         }
     }
 
     private void SpawnWallBlock(Vector3Int pos)
     {
-        //Instantiate(wallBlockPrefab, GridToWorldPosition(pos), Quaternion.identity);
-        EffectCtrl effectPrefabs = EffectSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(EffectCode.Wall.ToString());
-        EffectCtrl effectCtrl = EffectSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
+        CubeCtrl effectPrefabs = CubeSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(CubeCode.Wall.ToString());
+        CubeCtrl effectCtrl = CubeSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
         effectCtrl.gameObject.SetActive(true);
     }
+    
+    public void SpawnGarbageRows(LevelData levelData)
+    {
+        int rows = levelData.garbageRowCount;
+        int rowStartY = 0;
 
+        for (int y = 0; y < rows; y++)
+        {
+            int holeX = Random.Range(0, width);
+
+            for (int x = 0; x < width; x++)
+            {
+                if (x != holeX)
+                {
+                    Vector3Int pos = new Vector3Int(x, rowStartY + y);
+                    SpawnGarbageBlock(pos);
+                }
+            }
+        }
+    }
+
+    private void SpawnGarbageBlock(Vector3Int pos)
+    {
+        //GameObject block = Instantiate(garbageBlockPrefab, pos, Quaternion.identity);
+        // Nếu có hệ thống grid thì gán block vào lưới ở đây
+    }
 }

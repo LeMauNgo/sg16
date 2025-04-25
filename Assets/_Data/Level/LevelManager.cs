@@ -9,12 +9,11 @@ public class LevelManager : SaiSingleton<LevelManager>
     public int CurrentLevelIndex { get; private set; } = 0;
     public LevelData CurrentLevel => Levels.Count > 0 ? Levels[CurrentLevelIndex] : null;
 
-    protected override void Awake()
+    protected override void LoadComponents()
     {
-        base.Awake();
-        LoadAllLevels();
+        base.LoadComponents();
+        this.LoadAllLevels();
     }
-
     void LoadAllLevels()
     {
         Levels.Clear();
@@ -50,8 +49,8 @@ public class LevelManager : SaiSingleton<LevelManager>
     }
     private void InitLevel(LevelData level)
     {
-        GridManager.Instance.ClearGrid();
         GridManager.Instance.GenerateGrid(level.gridWidth, level.gridHeight);
+        GridManager.Instance.ClearGrid();
     }
     public void LoadNextLevel()
     {

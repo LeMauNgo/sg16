@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelID: 0
   gridWidth: 10
-  gridHeight: 100
+  gridHeight: 20
   garbageRowCount: 0

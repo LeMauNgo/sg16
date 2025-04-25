@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class EffectSpawnerManager : SaiSingleton<EffectSpawnerManager>
+public class CubeSpawnerManager : SaiSingleton<CubeSpawnerManager>
 {
-    [SerializeField] protected EffectSpawner spanwer;
-    public EffectSpawner Spanwer => spanwer;
+    [SerializeField] protected CubeSpawner spanwer;
+    public CubeSpawner Spanwer => spanwer;
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -13,7 +13,7 @@ public class EffectSpawnerManager : SaiSingleton<EffectSpawnerManager>
     protected virtual void LoadSpawner()
     {
         if (this.spanwer != null) return;
-        this.spanwer = GetComponent<EffectSpawner>();
+        this.spanwer = GetComponent<CubeSpawner>();
         Debug.LogWarning(transform.name + ": LoadSpawner", gameObject);
     }
 }
