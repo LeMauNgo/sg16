@@ -64,7 +64,6 @@ public class TetrominoPlayer : SaiBehaviour
     protected virtual void SetOffset(TetrominoDataSO tetrominoData)
     {
         this.rotationOffsets = tetrominoData.rotationOffsets;
-        Debug.Log(tetrominoData.tetrominoCode.ToString());
     }
     public virtual void SetPosition(Vector3Int pos)
     {

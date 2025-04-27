@@ -163,30 +163,85 @@ public class GridManager : SaiSingleton<GridManager>
         CubeCtrl effectCtrl = CubeSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
         effectCtrl.gameObject.SetActive(true);
     }
-    
-    public void SpawnGarbageRows(LevelData levelData)
+
+    private void SpawnBlock(Vector3Int pos)
+    {
+        CubeCtrl cubeCtrl = CubeSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(CubeCode.CubeTetrominoes.ToString());
+        CubeCtrl cube = CubeSpawnerManager.Instance.Spanwer.Spawn(cubeCtrl, pos);
+        CubeTetrominoes cubeTetrominoes = cube as CubeTetrominoes;
+        this.PlaceBlock(cubeTetrominoes);
+        cube.gameObject.SetActive(true);
+    }
+    public void SpawnChestAndGarbageRows(LevelData levelData)
     {
         int rows = levelData.garbageRowCount;
         int rowStartY = 0;
 
+        // 1. Spawn chest trước
+        Vector3Int chestPos = new Vector3Int(Random.Range(0, width - 1), 1); // Rương ở ngay trên đỉnh hàng rác
+        SpawnChest(chestPos);
+
+        // 2. Spawn garbage rows
         for (int y = 0; y < rows; y++)
         {
             int holeX = Random.Range(0, width);
 
+            // Nếu holeX trùng với rương -> random lại
+            while (IsHoleOnChest(holeX, chestPos))
+            {
+                holeX = Random.Range(0, width);
+            }
+
             for (int x = 0; x < width; x++)
             {
-                if (x != holeX)
-                {
-                    Vector3Int pos = new Vector3Int(x, rowStartY + y);
-                    SpawnGarbageBlock(pos);
-                }
+                // Nếu là ô rương thì bỏ qua
+                if (IsBlockOnChest(x, rowStartY + y, chestPos))
+                    continue;
+
+                // Nếu là lỗ thì bỏ qua
+                if (x == holeX)
+                    continue;
+
+                Vector3Int pos = new Vector3Int(x, rowStartY + y);
+                SpawnBlock(pos);
             }
         }
     }
 
-    private void SpawnGarbageBlock(Vector3Int pos)
+    // Hàm spawn 4 khối rương 2x2
+    private void SpawnChest(Vector3Int bottomLeft)
     {
-        //GameObject block = Instantiate(garbageBlockPrefab, pos, Quaternion.identity);
-        // Nếu có hệ thống grid thì gán block vào lưới ở đây
+        Vector3Int[] chestBlocks = new Vector3Int[]
+        {
+        bottomLeft,
+        bottomLeft + Vector3Int.right,
+        bottomLeft + Vector3Int.up,
+        bottomLeft + Vector3Int.right + Vector3Int.up
+        };
+        this.SpawnChestPrefabs(bottomLeft);
+        foreach (var pos in chestBlocks)
+        {
+            this.SpawnBlock(pos);
+        }
+    }
+    protected virtual void SpawnChestPrefabs(Vector3Int pos)
+    {
+        CubeCtrl effectPrefabs = CubeSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(CubeCode.Chest.ToString());
+        CubeCtrl effectCtrl = CubeSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
+        ChestCtrl chestCtrl = effectCtrl as ChestCtrl;
+        chestCtrl.bottomLeftPosition = pos;
+        effectCtrl.gameObject.SetActive(true);
+    }
+    // Kiểm tra nếu vị trí hole nằm đè lên ô rương
+    private bool IsHoleOnChest(int holeX, Vector3Int chestPos)
+    {
+        return holeX == chestPos.x || holeX == chestPos.x + 1;
+    }
+
+    // Kiểm tra nếu block spawn trùng với vị trí rương
+    private bool IsBlockOnChest(int x, int y, Vector3Int chestPos)
+    {
+        return (x == chestPos.x || x == chestPos.x + 1) &&
+               (y == chestPos.y || y == chestPos.y + 1);
     }
 }

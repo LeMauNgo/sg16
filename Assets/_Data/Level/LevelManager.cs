@@ -20,7 +20,7 @@ public class LevelManager : SaiSingleton<LevelManager>
         string path = Application.streamingAssetsPath;
 
         // Tìm tất cả file JSON bắt đầu bằng "level_"
-        var files = Directory.GetFiles(path, "Level_*.json");
+        var files = Directory.GetFiles(path, "Level*.json");
         foreach (var file in files)
         {
             string json = File.ReadAllText(file);
@@ -51,6 +51,7 @@ public class LevelManager : SaiSingleton<LevelManager>
     {
         GridManager.Instance.GenerateGrid(level.gridWidth, level.gridHeight);
         GridManager.Instance.ClearGrid();
+        GridManager.Instance.SpawnChestAndGarbageRows(level);
     }
     public void LoadNextLevel()
     {
