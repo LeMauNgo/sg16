@@ -7,4 +7,5 @@ public class LevelDataJson
     public int gridWidth;
     public int gridHeight;
     public int garbageRowCount;
+    public int chestCount;
 }

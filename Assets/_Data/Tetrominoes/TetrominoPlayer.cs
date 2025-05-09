@@ -77,7 +77,6 @@ public class TetrominoPlayer : SaiBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            Debug.Log(i);
             cells[i] = this.RotationOffsets[rotationState].cellPositions[i] + position;
         }
         this.TertrominoesVisual.UpdateVisuals();

@@ -26,6 +26,7 @@ public class LevelEditorWindow : EditorWindow
             levelData.gridWidth = EditorGUILayout.IntField("Grid Width", levelData.gridWidth);
             levelData.gridHeight = EditorGUILayout.IntField("Grid Height", levelData.gridHeight);
             levelData.garbageRowCount = EditorGUILayout.IntField("Garbage Row Count", levelData.garbageRowCount);
+            levelData.chestCount = EditorGUILayout.IntField("Chest Count", levelData.chestCount);
 
             EditorGUILayout.Space();
 
@@ -48,7 +49,8 @@ public class LevelEditorWindow : EditorWindow
             levelID = level.levelID,
             gridWidth = level.gridWidth,
             gridHeight = level.gridHeight,
-            garbageRowCount = level.garbageRowCount
+            garbageRowCount = level.garbageRowCount,
+            chestCount = level.chestCount
         };
 
         string json = JsonUtility.ToJson(jsonData, true);

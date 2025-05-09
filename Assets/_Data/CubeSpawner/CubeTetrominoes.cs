@@ -6,4 +6,8 @@ public class CubeTetrominoes : CubeCtrl
     {
         return CubeCode.CubeTetrominoes.ToString();
     }
+    public virtual void SetMoveDownPosition(Vector3Int position)
+    {
+        this.transform.position += Vector3Int.down;
+    }
 }

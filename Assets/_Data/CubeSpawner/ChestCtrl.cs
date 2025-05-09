@@ -1,62 +1,66 @@
 ﻿using UnityEngine;
 
-public class ChestCtrl : CubeCtrl
+public class ChestCtrl : CubeTetrominoes
 {
-    public Vector3Int bottomLeftPosition; // vị trí góc dưới bên trái của rương trên grid
+    [SerializeField] protected Vector3Int bottomLeftPosition; // vị trí góc dưới bên trái của rương trên grid
+    public Vector3Int BottomLeftPosition => bottomLeftPosition;
 
-    private bool isOpened = false;
     public override string GetName()
     {
         return CubeCode.Chest.ToString();
     }
-    private void Update()
+    public override void SetMoveDownPosition(Vector3Int position)
     {
-        if (isOpened) return;
-
-        if (CheckChestExposed())
+        if (position != bottomLeftPosition) return;
+        base.SetMoveDownPosition(position);
+        this.bottomLeftPosition += Vector3Int.down;
+    }
+    public virtual void SetBottomLeftPosition(Vector3Int position)
+    {
+        bottomLeftPosition = position;
+    }
+    public void TryOpenChest()
+    {
+        if (CanOpenChest())
         {
             OpenChest();
         }
+        else
+        {
+            Debug.Log("Chest cannot be opened. Not all blocks are fully visible.");
+        }
     }
 
-    private bool CheckChestExposed()
+    private bool CanOpenChest()
     {
-        // Giả sử bạn có hàm IsOccupied(x, y) để kiểm tra block
-        return !IsOccupied(bottomLeftPosition.x, bottomLeftPosition.y) &&
-               !IsOccupied(bottomLeftPosition.x + 1, bottomLeftPosition.y) &&
-               !IsOccupied(bottomLeftPosition.x, bottomLeftPosition.y + 1) &&
-               !IsOccupied(bottomLeftPosition.x + 1, bottomLeftPosition.y + 1);
+        // Kiểm tra trạng thái của 4 ô thuộc rương
+        return !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(-1,0,0)) &&
+               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(-1,1,0)) &&
+               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(0, 2, 0)) &&
+               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(1, 2, 0)) &&
+               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(2, 0, 0)) &&
+               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(2, 1, 0));
     }
 
-    private void OpenChest()
+    protected virtual void OpenChest()
     {
-        isOpened = true;
 
         // Hiệu ứng mở rương (ví dụ animation, sound)
         Debug.Log("Chest opened!");
 
         // Nhận vật phẩm ngay lập tức
         GiveReward();
-
-        // (Tùy bạn) Huỷ rương sau khi mở
-        Destroy(gameObject);
+        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x, bottomLeftPosition.y));
+        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x + 1, bottomLeftPosition.y));
+        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x, bottomLeftPosition.y + 1));
+        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x + 1, bottomLeftPosition.y + 1));
+        this.Despawn.DoDespawn();
     }
 
     private void GiveReward()
     {
-        // Ở đây bạn có thể random vật phẩm thưởng
-        // Tạm thời mình làm đơn giản:
         Debug.Log("Player received a reward!");
-
-        // Ví dụ: buff tốc độ, thêm điểm, phá hàng rác, v.v.
-        // Bạn có thể code thêm logic ở đây tùy yêu cầu.
-    }
-
-    // ====== DUMMY FUNCTION để test =======
-    private bool IsOccupied(int x, int y)
-    {
-        // TODO: Code kiểm tra lưới thật
-        return false;
+        InventoriesManager.Instance.AddItem(ItemCode.Gold, 10);
     }
 
 

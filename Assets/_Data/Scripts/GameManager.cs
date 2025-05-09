@@ -13,6 +13,10 @@ public class GameManager : SaiSingleton<GameManager>
         PlayerManager.Instance.CreateTetromino(new Vector3Int(GridManager.Instance.With / 2 - 2, GridManager.Instance.Height - 2, 0));
         Debug.Log("Game Start");
     }
+    protected virtual void SetPlayGame(bool isPlay)
+    {
+        this.isPlaying = isPlay;
+    }
     public virtual void GameOver()
     {
         isPlaying = false;

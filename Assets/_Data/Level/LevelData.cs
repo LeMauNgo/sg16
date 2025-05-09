@@ -8,4 +8,5 @@ public class LevelData : ScriptableObject
     public int gridWidth;
     public int gridHeight;
     public int garbageRowCount;
+    public int chestCount;
 }

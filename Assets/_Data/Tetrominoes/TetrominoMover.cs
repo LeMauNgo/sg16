@@ -87,6 +87,6 @@ public class TetrominoMover : TertrominoesPlayerAbs
         }
         GridManager.Instance.ClearFullRows();
         this.tetrominoCtrl.Rotation.SetRotation(false);
-        PlayerManager.Instance.CreateTetromino(new Vector3Int(GridManager.Instance.With / 2 - 2, GridManager.Instance.Height - 2, 0));
+        PlayerManager.Instance.CreateTetromino(CameraManager.Instance.GetPosTertromino());
     }
 }

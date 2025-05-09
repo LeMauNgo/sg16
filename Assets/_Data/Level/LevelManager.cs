@@ -30,7 +30,7 @@ public class LevelManager : SaiSingleton<LevelManager>
         }
 
         Levels.Sort((a, b) => a.levelID.CompareTo(b.levelID));
-        Debug.Log($"Loaded {Levels.Count} levels.");
+        //Debug.Log($"Loaded {Levels.Count} levels.");
     }
 
     public void LoadLevel(int index)
@@ -38,7 +38,7 @@ public class LevelManager : SaiSingleton<LevelManager>
         if (index >= 0 && index < Levels.Count)
         {
             CurrentLevelIndex = index;
-            Debug.Log("Level loaded: " + CurrentLevel.levelID);
+            //Debug.Log("Level loaded: " + CurrentLevel.levelID);
             // Gọi sự kiện hoặc logic khởi tạo level ở đây
             InitLevel(CurrentLevel);
         }
