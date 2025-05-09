@@ -98,17 +98,18 @@ public class GridManager : SaiSingleton<GridManager>
 
         for (int x = 0; x < width; x++)
         {
-            if (x >= 0 && x < width && gridRows[y].row[x] != null)
-            {
-                ChestCtrl chestCtrl = gridRows[y].row[x] as ChestCtrl;
-                if (gridRows[y].row[x] == null) continue;
-                if (chestCtrl != null) continue;
-                gridRows[y].row[x].Despawn.DoDespawn();
-                gridRows[y].row[x] = null;
-            }
-        }
+            var block = gridRows[y].row[x];
+            if (block == null) continue;
+            gridRows[y].row[x] = null;
 
-        this.OpenChestsInRow(y); // Mở rương trong hàng này
+            // Mở rương nếu là block thuộc rương
+            if (block is CubeChestTetrominoesCtrl chestBlock)
+            {
+                chestBlock.OpenChest();
+            }
+
+            block.Despawn.DoDespawn();
+        }
     }
     protected virtual void OpenChestsInRow(int y)
     {
@@ -310,11 +311,12 @@ public class GridManager : SaiSingleton<GridManager>
         foreach (var pos in chestBlocks)
         {
             //this.SpawnBlock(pos);
-            this.PlaceBlock(pos,chestCtrl);
+            this.PlaceBlock(pos,chestCtrl.SpawnChestCube(pos));
         }
     }
     protected virtual ChestCtrl SpawnChestPrefabs(Vector3Int pos)
     {
+        pos.z = 1;
         CubeCtrl effectPrefabs = CubeSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(CubeCode.Chest.ToString());
         CubeCtrl effectCtrl = CubeSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
         ChestCtrl chestCtrl = effectCtrl as ChestCtrl;

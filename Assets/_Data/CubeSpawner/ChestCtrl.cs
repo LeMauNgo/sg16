@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class ChestCtrl : CubeTetrominoes
 {
@@ -30,18 +31,30 @@ public class ChestCtrl : CubeTetrominoes
             Debug.Log("Chest cannot be opened. Not all blocks are fully visible.");
         }
     }
-
+    public virtual CubeChestTetrominoesCtrl SpawnChestCube(Vector3Int pos)
+    {
+        CubeCtrl effectPrefabs = CubeSpawnerManager.Instance.Spanwer.PoolPrefabs.GetByName(CubeCode.CubeChestTetrominoes.ToString());
+        CubeCtrl effectCtrl = CubeSpawnerManager.Instance.Spanwer.Spawn(effectPrefabs, pos);
+        CubeChestTetrominoesCtrl cubeChestTetrominoes = effectCtrl as CubeChestTetrominoesCtrl;
+        cubeChestTetrominoes.SetChestCtrl(this);
+        effectCtrl.gameObject.SetActive(true);
+        return cubeChestTetrominoes;
+    }
     private bool CanOpenChest()
     {
         // Kiểm tra trạng thái của 4 ô thuộc rương
-        return !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(-1,0,0)) &&
-               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(-1,1,0)) &&
-               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(0, 2, 0)) &&
-               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(1, 2, 0)) &&
-               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(2, 0, 0)) &&
-               !GridManager.Instance.IsOccupied(bottomLeftPosition + new Vector3Int(2, 1, 0));
+        return !IsOccupied(bottomLeftPosition) &&
+               !IsOccupied(bottomLeftPosition + new Vector3Int(1, 0, 0)) &&
+               !IsOccupied(bottomLeftPosition + new Vector3Int(0, 1, 0)) &&
+               !IsOccupied(bottomLeftPosition + new Vector3Int(1, 1, 0));
     }
-
+    public bool IsOccupied(Vector3Int gridPos)
+    {
+        if (gridPos.x < 0 || gridPos.x >= GridManager.Instance.With || gridPos.y < 0 || gridPos.y >= GridManager.Instance.Height)
+            return true;
+        CubeChestTetrominoesCtrl cube = GridManager.Instance.GridRows[gridPos.y].row[gridPos.x] as CubeChestTetrominoesCtrl;
+        return cube != null;
+    }
     protected virtual void OpenChest()
     {
 
@@ -50,10 +63,10 @@ public class ChestCtrl : CubeTetrominoes
 
         // Nhận vật phẩm ngay lập tức
         GiveReward();
-        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x, bottomLeftPosition.y));
-        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x + 1, bottomLeftPosition.y));
-        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x, bottomLeftPosition.y + 1));
-        GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x + 1, bottomLeftPosition.y + 1));
+        //GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x, bottomLeftPosition.y));
+        //GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x + 1, bottomLeftPosition.y));
+        //GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x, bottomLeftPosition.y + 1));
+        //GridManager.Instance.ClearBlock(new Vector3Int(bottomLeftPosition.x + 1, bottomLeftPosition.y + 1));
         this.Despawn.DoDespawn();
     }
 
