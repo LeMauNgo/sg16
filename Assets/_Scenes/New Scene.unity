@@ -914,9 +914,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 997179691}
-  - component: {fileID: 997179693}
   - component: {fileID: 997179692}
   - component: {fileID: 997179694}
+  - component: {fileID: 997179695}
   m_Layer: 0
   m_Name: NetWordManager
   m_TagString: Untagged
@@ -968,7 +968,19 @@ MonoBehaviour:
     PacketDelayMS: 0
     PacketJitterMS: 0
     PacketDropRate: 0
---- !u!114 &997179693
+--- !u!114 &997179694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 997179690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd72b72dbdee804381b09b68931f99c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &997179695
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -987,7 +999,7 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 337975757}
     Prefabs:
       NetworkPrefabsLists:
-      - {fileID: 11400000, guid: c9525d95274ed064b8ddd1db9910bc14, type: 2}
+      - {fileID: 11400000, guid: a39a45d6e26f8794a830875997b3fe5a, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -1011,18 +1023,6 @@ MonoBehaviour:
     OldPrefabList: []
   RunInBackground: 1
   LogLevel: 1
---- !u!114 &997179694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 997179690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcd72b72dbdee804381b09b68931f99c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1043639577
 GameObject:
   m_ObjectHideFlags: 0
